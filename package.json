@@ -1,0 +1,8 @@
+{
+  "name": "wd501-backend-capstone",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "minimist": "^1.2.8"
+  }
+}
