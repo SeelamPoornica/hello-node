@@ -1,0 +1,11 @@
+{
+  "name": "wd501-todo-closure",
+  "version": "1.0.0",
+  "description": "To-Do manager application using JavaScript Closure",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
