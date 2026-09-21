@@ -1,11 +1,21 @@
 {
-  "name": "wd501-todo-closure",
+  "name": "wd501-todo-testing",
   "version": "1.0.0",
-  "description": "To-Do manager application using JavaScript Closure",
-  "main": "index.js",
+  "description": "Todo application with Jest unit tests",
+  "main": "todo.js",
   "scripts": {
-    "start": "node index.js"
+    "test": "jest",
+    "format": "prettier --write \"**/*.js\"",
+    "prepare": "husky install"
   },
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "prettier": "^3.0.0",
+    "husky": "^8.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format && npm test"
+    }
+  }
 }
