@@ -1,3 +1,4 @@
+<!-- views/index.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,7 @@
           <%= overdue.length %>
         </span>
       </h2>
-      <%- include('todos.ejs', { allTodos: overdue }) %>
+      <%- include('todos.ejs', { data: overdue }) %>
     </div>
 
     <!-- Due Today Section -->
@@ -29,7 +30,7 @@
           <%= dueToday.length %>
         </span>
       </h2>
-      <%- include('todos.ejs', { allTodos: dueToday }) %>
+      <%- include('todos.ejs', { data: dueToday }) %>
     </div>
 
     <!-- Due Later Section -->
@@ -40,7 +41,7 @@
           <%= dueLater.length %>
         </span>
       </h2>
-      <%- include('todos.ejs', { allTodos: dueLater }) %>
+      <%- include('todos.ejs', { data: dueLater }) %>
     </div>
   </div>
 </body>
