@@ -1,51 +1,45 @@
-const todoList = require('../todo');
+const request = require("supertest");
+const db = require("../models/index");
+const app = require("../app");
 
-describe("Todo List Test Suite", () => {
-  let todos;
-  const today = new Date().toISOString().split("T")[0];
-  const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0];
-  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split("T")[0];
+let server, agent;
 
-  beforeEach(() => {
-    todos = todoList();
+describe("Todo Application Routes", function () {
+  beforeAll(async () => {
+    await db.sequelize.sync({ force: true });
+    server = app.listen(3000, () => {});
+    agent = request.agent(server);
   });
 
-  // 1. A test that checks creating a new todo.
-  test("Should add a new todo", () => {
-    const initialCount = todos.all.length;
-    todos.add({ title: "Test Todo", dueDate: today, completed: false });
-    expect(todos.all.length).toBe(initialCount + 1);
+  afterAll(async () => {
+    try {
+      await db.sequelize.close();
+      await server.close();
+    } catch (error) {
+      console.log(error);
+    }
   });
 
-  // 2. A test that checks marking a todo as completed.
-  test("Should mark a todo as completed", () => {
-    todos.add({ title: "Complete me", dueDate: today, completed: false });
-    expect(todos.all[0].completed).toBe(false);
-    todos.markAsComplete(0);
-    expect(todos.all[0].completed).toBe(true);
+  test("Deletes a todo by ID and returns true", async () => {
+    const createResponse = await agent.post("/todos").send({
+      title: "Sample task to delete",
+      dueDate: new Date().toISOString().split("T")[0],
+      completed: false,
+    });
+
+    const parsedResponse = JSON.parse(createResponse.text);
+    const todoId = parsedResponse.id;
+
+    const response = await agent.delete(`/todos/${todoId}`).send();
+    const parsedDeleteResponse = JSON.parse(response.text);
+
+    expect(parsedDeleteResponse).toBe(true);
   });
 
-  // 3. A test that checks retrieval of overdue items.
-  test("Should retrieve overdue items", () => {
-    todos.add({ title: "Overdue task", dueDate: yesterday, completed: false });
-    const overdueItems = todos.overdue();
-    expect(overdueItems.length).toBe(1);
-    expect(overdueItems[0].title).toBe("Overdue task");
-  });
+  test("Returns false when deleting a non-existent todo ID", async () => {
+    const response = await agent.delete("/todos/999999").send();
+    const parsedDeleteResponse = JSON.parse(response.text);
 
-  // 4. A test that checks retrieval of due today items.
-  test("Should retrieve due today items", () => {
-    todos.add({ title: "Today task", dueDate: today, completed: false });
-    const todayItems = todos.dueToday();
-    expect(todayItems.length).toBe(1);
-    expect(todayItems[0].title).toBe("Today task");
-  });
-
-  // 5. A test that checks retrieval of due later items.
-  test("Should retrieve due later items", () => {
-    todos.add({ title: "Later task", dueDate: tomorrow, completed: false });
-    const laterItems = todos.dueLater();
-    expect(laterItems.length).toBe(1);
-    expect(laterItems[0].title).toBe("Later task");
+    expect(parsedDeleteResponse).toBe(false);
   });
 });
